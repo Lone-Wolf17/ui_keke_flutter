@@ -29,7 +29,8 @@ dependencies:
   provider: ^4.3.2
   rxdart: any
   google_maps_flutter: ^0.5.29
-  geoflutterfire: ^2.1.0
+  flutter_google_places: any
+  geoflutterfire: any
   location: ^3.0.2
   uuid: ^2.2.0
   google_maps_webservice: ^0.0.17

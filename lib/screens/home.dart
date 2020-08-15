@@ -31,7 +31,7 @@ class _MapState extends State<Map> {
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
-
+    // TODO: Use streambuilder for appState.isLocationService enabled
     return appState.initialPosition == null
         ? Container(
             alignment: Alignment.center,
@@ -124,28 +124,31 @@ class _MapState extends State<Map> {
                             spreadRadius: 3)
                       ]),
                   child: TextField(
-                    cursorColor: black,
-                    controller: appState.destinationController,
-                    textInputAction: TextInputAction.go,
-                    onSubmitted: (value) {
-                      appState.sendRequest(value);
-                    },
-                    decoration: InputDecoration(
-                      icon: Container(
-                        margin: EdgeInsets.only(left: 20, top: 5),
-                        width: 10,
-                        height: 10,
-                        child: Icon(
-                          Icons.local_taxi,
-                          color: Colors.black,
+                          onTap: () {
+                            appState.autoCompleteLocationSearch(context);
+                          },
+                          cursorColor: black,
+                          controller: appState.destinationController,
+                          textInputAction: TextInputAction.go,
+                          onSubmitted: (value) {
+                            appState.sendRequest(value);
+                          },
+                          decoration: InputDecoration(
+                            icon: Container(
+                              margin: EdgeInsets.only(left: 20, top: 5),
+                              width: 10,
+                              height: 10,
+                              child: Icon(
+                                Icons.local_taxi,
+                                color: Colors.black,
+                              ),
+                            ),
+                            hintText: 'destination?',
+                            border: InputBorder.none,
+                            contentPadding:
+                                EdgeInsets.only(left: 15.0, top: 16.0),
+                          ),
                         ),
-                      ),
-                      hintText: 'destination?',
-                      border: InputBorder.none,
-                      contentPadding:
-                      EdgeInsets.only(left: 15.0, top: 16.0),
-                    ),
-                  ),
                 ))
           ],
         )

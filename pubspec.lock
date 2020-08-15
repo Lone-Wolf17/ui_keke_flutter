@@ -160,6 +160,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_google_places:
+    dependency: "direct main"
+    description:
+      name: flutter_google_places
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.2.4"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:

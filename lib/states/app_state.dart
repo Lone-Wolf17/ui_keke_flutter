@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_webservice/places.dart';
 import 'package:ui_keke_flutter/requests/google_map_requests.dart';
+import 'package:ui_keke_flutter/utils/protected_data.dart';
 import 'package:ui_keke_flutter/utils/utils_core.dart';
 
 class AppState with ChangeNotifier {
@@ -37,6 +40,29 @@ class AppState with ChangeNotifier {
     _loadingInitialPosition();
   }
 
+  // ! AUTO COMPLETE USER LOCATION SEARCH
+  void autoCompleteLocationSearch(BuildContext context) async {
+    Prediction prediction = await PlacesAutocomplete.show(
+        context: context,
+        apiKey: google_maps_api_key,
+        language: "en",
+        components: [Component(Component.country, "ng")]);
+    if (prediction != null) {
+      GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: google_maps_api_key);
+      PlacesDetailsResponse details =
+          await _places.getDetailsByPlaceId(prediction.placeId);
+//      double latitude =
+//          details.result.geometry.location.lat;
+//      double longitude =
+//          details.result.geometry.location.lat;
+      String address = prediction.description;
+
+      sendRequest(address);
+      destinationController.text = address;
+    }
+    notifyListeners();
+  }
+
   //! TO GET THE USERS LOCATION
   void _getUserLocation() async {
     print("GET USER METHOD RUNNING =====");
@@ -59,7 +85,7 @@ class AppState with ChangeNotifier {
   void _createRoute(String encodedPoly) {
     _polyLines.add(Polyline(
         polylineId: PolylineId(_lastPosition.toString()),
-        width: 10,
+        width: 5,
         points: _convertToLatLng(_decodePoly(encodedPoly)),
         color: black));
     notifyListeners();
@@ -130,7 +156,7 @@ class AppState with ChangeNotifier {
     return result;
   }
 
-//  ! SEND REQUEST
+//  ! SEND REQUEST USING ADDRESS
   void sendRequest(String intendedLocation) async {
     List<Placemark> placemark =
         await Geolocator().placemarkFromAddress(intendedLocation);
