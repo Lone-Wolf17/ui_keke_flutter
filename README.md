@@ -2,6 +2,8 @@
 
 A Uber Like App Built for Keke Hailing service in University of Ibadan
 
+Remember to add your "google-services.json" file to android/app directory
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.

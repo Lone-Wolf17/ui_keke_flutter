@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:ui_keke_flutter/states/app_state.dart';
 import 'package:ui_keke_flutter/utils/utils_core.dart';
-import 'package:uuid/uuid.dart';
 
 class MyHomePage extends StatelessWidget {
   @override
@@ -21,31 +23,52 @@ class Map extends StatefulWidget {
 }
 
 class _MapState extends State<Map> {
-  GoogleMapController _mapController;
-  static LatLng _center = LatLng(6.573261, 3.348889);
-  LatLng _lastPosition = _center;
-
-//  GoogleMapsPlaces googlePlaces;
-//  GoogleMapsServices googleMapsServices = Goo
-  final Set<Marker> _markers = {};
-  final Set<Polyline> poly = {};
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Stack(
-          children: [
-            GoogleMap(
-              initialCameraPosition:
-                  CameraPosition(target: _center, zoom: 15.0),
-              onMapCreated: onCreated,
-              myLocationEnabled: true,
-              mapType: MapType.normal,
-              compassEnabled: true,
-              markers: _markers,
-              onCameraMove: _onCameraMoved,
+    final appState = Provider.of<AppState>(context);
+
+    return appState.initialPosition == null
+        ? Container(
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SpinKitRotatingCircle(
+                  color: black,
+                  size: 50.0,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Visibility(
+                    visible: appState.locationServiceActive == false,
+                    child: Text(
+                      "Please enable location services!",
+                      style: TextStyle(color: grey, fontSize: 18),
+                    ))
+              ],
             ),
+          )
+        : Stack(
+            children: <Widget>[
+              Stack(
+                children: [
+                  GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                        target: appState.initialPosition, zoom: 15.0),
+                    onMapCreated: appState.onCreated,
+                    myLocationEnabled: true,
+                    mapType: MapType.normal,
+                    compassEnabled: true,
+                    markers: appState.markers,
+                    onCameraMove: appState.onCameraMoved,
+                    polylines: appState.polyLines,
+                  ),
             Positioned(
                 top: 45.0,
                 right: 15.0,
@@ -65,6 +88,7 @@ class _MapState extends State<Map> {
                       ]),
                   child: TextField(
                     cursorColor: black,
+                    controller: appState.locationController,
                     decoration: InputDecoration(
                       icon: Container(
                         margin: EdgeInsets.only(left: 20, top: 5),
@@ -77,11 +101,11 @@ class _MapState extends State<Map> {
                       ),
                       hintText: 'pick up',
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.only(left: 15.0, top: 16.0),
+                      contentPadding:
+                      EdgeInsets.only(left: 15.0, top: 16.0),
                     ),
                   ),
                 )),
-
             Positioned(
                 top: 100.0,
                 right: 15.0,
@@ -101,60 +125,31 @@ class _MapState extends State<Map> {
                       ]),
                   child: TextField(
                     cursorColor: black,
+                    controller: appState.destinationController,
                     textInputAction: TextInputAction.go,
+                    onSubmitted: (value) {
+                      appState.sendRequest(value);
+                    },
                     decoration: InputDecoration(
                       icon: Container(
                         margin: EdgeInsets.only(left: 20, top: 5),
                         width: 10,
                         height: 10,
-                        child: Icon(Icons.local_taxi, color: Colors.black,),
+                        child: Icon(
+                          Icons.local_taxi,
+                          color: Colors.black,
+                        ),
                       ),
                       hintText: 'destination?',
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.only(left: 15.0, top: 16.0),
+                      contentPadding:
+                      EdgeInsets.only(left: 15.0, top: 16.0),
                     ),
                   ),
                 ))
-//            Positioned(
-//              top: 40,
-//              right: 10,
-//              child: FloatingActionButton(
-//                onPressed: _onAddMarkerPressed,
-//                tooltip: "add marker",
-//                backgroundColor: Colors.blue,
-//                child: Icon(
-//                  Icons.add_location,
-//                  color: white,
-//                ),
-//              ),
-//            )
           ],
         )
       ],
     );
-  }
-
-  void onCreated(GoogleMapController controller) {
-    setState(() {
-      _mapController = controller;
-    });
-  }
-
-  void _onCameraMoved(CameraPosition position) {
-    setState(() {
-      _lastPosition = position.target;
-    });
-  }
-
-  void _onAddMarkerPressed() {
-    var uuid = Uuid();
-
-    setState(() {
-      _markers.add(Marker(
-          markerId: MarkerId(_lastPosition.toString()),
-          position: _lastPosition,
-          infoWindow: InfoWindow(title: "remember me", snippet: "good place"),
-          icon: BitmapDescriptor.defaultMarker));
-    });
   }
 }

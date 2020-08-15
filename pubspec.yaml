@@ -14,7 +14,7 @@ description: A Uber Like App Built for Keke Hailing service in University of Iba
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.4.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -26,6 +26,7 @@ dependencies:
   cloud_firestore: ^0.13.7
   firebase_database: ^3.1.6
   firebase_auth: ^0.16.1
+  provider: ^4.3.2
   rxdart: any
   google_maps_flutter: ^0.5.29
   geoflutterfire: ^2.1.0
@@ -34,6 +35,7 @@ dependencies:
   google_maps_webservice: ^0.0.17
   geolocator: any
   http: ^0.12.2
+  flutter_spinkit: "^4.1.2"
 
 
 dev_dependencies:
